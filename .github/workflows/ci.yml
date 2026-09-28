@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build, test, publish (windows)
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore -c Release
+
+      - name: Test
+        # GitHub Windows runners execute as administrator, so the WMI smoke tests read real counters.
+        run: dotnet test --no-build -c Release
+
+      - name: Publish Native AOT (win-x64)
+        # Needs the MSVC linker; the windows-latest image ships Visual Studio with the C++ workload.
+        run: dotnet publish src/SMARTProbe --no-restore -c Release -r win-x64 -o artifacts/win-x64
+
+      - name: Smoke test the published executable
+        shell: pwsh
+        run: |
+          $report = & artifacts/win-x64/SMARTProbe.exe --once | ConvertFrom-Json
+          if (-not $report.disks) { throw "no disks in report" }
+          $report.disks | Format-Table deviceId, friendlyName, busType, healthStatus, temperatureC, unavailable
+          & artifacts/win-x64/SMARTProbe.exe --version
+          $exe = Get-Item artifacts/win-x64/SMARTProbe.exe
+          "Native executable: {0:N1} MB" -f ($exe.Length / 1MB)
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: SMARTProbe-win-x64
+          path: artifacts/win-x64/SMARTProbe.exe
+          retention-days: 14

@@ -1,0 +1,26 @@
+name: Feature request
+description: Propose a change or addition
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the situation, not the solution, first.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+
+  - type: checkboxes
+    id: principles
+    attributes:
+      label: Fit with the project's principles
+      description: SMARTProbe is stateless, read-only and loopback-by-default. Check what applies.
+      options:
+        - label: This does not require SMARTProbe to persist anything
+        - label: This does not add a writable endpoint
+        - label: This does not change the default network exposure

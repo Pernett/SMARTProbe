@@ -1,0 +1,48 @@
+# EditorConfig — https://editorconfig.org
+# Formatting and analyzer settings for the whole repository.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{json,yml,yaml,slnx,props,targets,csproj}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.cs]
+# Style: match the existing code — Allman braces, `var` everywhere, file-scoped namespaces.
+csharp_new_line_before_open_brace = all
+csharp_prefer_braces = true:warning
+csharp_style_namespace_declarations = file_scoped:warning
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = true:suggestion
+csharp_style_prefer_primary_constructors = false
+dotnet_sort_system_directives_first = true
+dotnet_style_qualification_for_field = false:warning
+dotnet_style_qualification_for_property = false:warning
+dotnet_style_qualification_for_method = false:warning
+
+# Analyzer tuning. The build treats warnings as errors, so anything left on is enforced.
+#
+# CA1848/CA1873: LoggerMessage source generation for a single startup log line adds more code
+# than the probe has log calls. Not worth it here.
+dotnet_diagnostic.CA1848.severity = none
+dotnet_diagnostic.CA1873.severity = none
+# CA1303: string literals in Console output are intentional — the CLI is not localised
+# (InvariantGlobalization is on).
+dotnet_diagnostic.CA1303.severity = none
+# Win32 struct/constant names are kept as documented (STORAGE_PROPERTY_QUERY, GENERIC_READ).
+dotnet_diagnostic.CA1707.severity = none
+dotnet_diagnostic.CA1712.severity = none
+
+[tests/**.cs]
+# Test method names read as sentences.
+dotnet_diagnostic.CA1707.severity = none

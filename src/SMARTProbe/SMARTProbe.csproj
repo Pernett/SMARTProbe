@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>SMARTProbe</AssemblyName>
+    <RootNamespace>SmartProbe</RootNamespace>
+    <Description>Stateless, privileged local probe that answers drive SMART/temperature questions over a CLI or a loopback HTTP API.</Description>
+
+    <!-- Native AOT. `dotnet build` only runs the AOT/trim analyzers; `dotnet publish -r <rid>`
+         compiles to one native executable with no runtime dependency. WMI is reached through
+         hand-bound COM vtables (Interop/Wmi.cs) precisely so that this is possible: System.Management
+         depends on built-in COM interop, which AOT cannot compile. -->
+    <PublishAot>true</PublishAot>
+    <IsAotCompatible>true</IsAotCompatible>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!-- The probe is a diagnostic surface, not a web app: no static files, no IIS web.config. -->
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
+    <IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The one dependency: SCM integration and the Event Log logger. Everything else is the
+         base class library plus P/Invoke. -->
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="SMARTProbe.Tests" />
+  </ItemGroup>
+
+</Project>

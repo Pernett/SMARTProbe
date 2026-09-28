@@ -1,0 +1,38 @@
+name: Hardware report
+description: Share what SMARTProbe reports on your drives — missing values, surprising values, or an IOCTL success
+labels: [hardware]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Hardware variety is the one thing a single maintainer cannot test. Thank you for adding a
+        data point. Please run from an **elevated** prompt so the counters are actually read.
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Elevated `--once` output
+      render: json
+    validations:
+      required: true
+
+  - type: textarea
+    id: drives
+    attributes:
+      label: Drives
+      description: Model, interface (SATA / NVMe / USB enclosure / RAID controller), and whether it is internal or external.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What looks wrong or interesting?
+      description: >
+        For example: a value you know the drive supports is missing; `temperatureSource` is `ioctl`;
+        `healthStatus` disagrees with the vendor tool; a RAID member is reported oddly.
+
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version

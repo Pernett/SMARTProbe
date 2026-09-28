@@ -1,0 +1,48 @@
+name: Bug report
+description: Something is wrong or crashes
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, what happened instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Output
+      description: >
+        Paste the output of `SMARTProbe.exe --once` from an **elevated** prompt, plus any error
+        text. Redact the machine name if you like; drive model strings are useful, please keep them.
+      render: json
+
+  - type: input
+    id: version
+    attributes:
+      label: SMARTProbe version
+      description: Output of `SMARTProbe.exe --version`
+    validations:
+      required: true
+
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      description: Output of `winver` or `[Environment]::OSVersion.Version` in PowerShell
+    validations:
+      required: true
+
+  - type: dropdown
+    id: mode
+    attributes:
+      label: How was it running?
+      options:
+        - --once from an elevated prompt
+        - --once from a normal prompt
+        - Installed service
+        - Interactive web mode (no flags)
+    validations:
+      required: true

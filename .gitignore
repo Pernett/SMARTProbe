@@ -1,0 +1,31 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+publish/
+artifacts/
+TestResults/
+*.binlog
+
+# IDE / local tooling
+.claude/
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.swp
+*.DotSettings.user
+
+# NuGet
+*.nupkg
+*.snupkg
+project.lock.json
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Local secrets / overrides (none are expected, but never commit them by accident)
+*.local.json
+appsettings.*.local.json

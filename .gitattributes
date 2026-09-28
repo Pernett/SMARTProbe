@@ -1,0 +1,14 @@
+# Normalise line endings to LF in the repository regardless of each contributor's core.autocrlf.
+# Matches .editorconfig (end_of_line = lf). Windows tooling handles LF fine.
+* text=auto eol=lf
+
+# Windows-only scripts that cmd.exe would misparse with LF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binaries
+*.png binary
+*.ico binary
+*.pdb binary
+*.exe binary
+*.dll binary

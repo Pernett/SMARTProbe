@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "Once (JSON to stdout)": {
+      "commandName": "Project",
+      "commandLineArgs": "--once"
+    },
+    "Serve (loopback, test page at /)": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 5199",
+      "launchBrowser": true,
+      "launchUrl": "http://127.0.0.1:5199/",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

@@ -1,0 +1,94 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: Publish ${{ matrix.rid }}
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        rid: [win-x64, win-arm64]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Derive version from tag
+        id: version
+        shell: pwsh
+        run: '"version=$($env:GITHUB_REF_NAME.TrimStart(''v''))" >> $env:GITHUB_OUTPUT'
+
+      - name: Test
+        run: dotnet test -c Release
+
+      - name: Publish
+        run: >
+          dotnet publish src/SMARTProbe -c Release -r ${{ matrix.rid }}
+          -o artifacts/${{ matrix.rid }}
+          -p:Version=${{ steps.version.outputs.version }}
+
+      - name: Package
+        shell: pwsh
+        run: |
+          $name = "SMARTProbe-${{ steps.version.outputs.version }}-${{ matrix.rid }}"
+          # Ship the native executable and the docs; the .pdb is debug symbols, kept as a
+          # separate build artifact for crash analysis rather than in the download.
+          Copy-Item LICENSE, README.md artifacts/${{ matrix.rid }}/
+          Compress-Archive -Path artifacts/${{ matrix.rid }}/SMARTProbe.exe, artifacts/${{ matrix.rid }}/LICENSE, artifacts/${{ matrix.rid }}/README.md -DestinationPath "$name.zip"
+          (Get-FileHash "$name.zip" -Algorithm SHA256).Hash.ToLower() + "  $name.zip" | Out-File "$name.zip.sha256" -Encoding ascii -NoNewline
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: ${{ matrix.rid }}
+          path: |
+            SMARTProbe-*.zip
+            SMARTProbe-*.zip.sha256
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: symbols-${{ matrix.rid }}
+          path: artifacts/${{ matrix.rid }}/SMARTProbe.pdb
+          retention-days: 90
+
+  release:
+    name: Create GitHub Release
+    needs: publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v5
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Extract changelog section
+        id: notes
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          # Everything between "## [<version>]" and the next "## [" heading.
+          awk -v heading="## [$version]" '
+            index($0, heading) == 1 { on=1; next }
+            on && index($0, "## [") == 1 { exit }
+            on { print }
+          ' CHANGELOG.md > notes.md
+          if [ ! -s notes.md ]; then echo "No changelog entry found for $version." > notes.md; fi
+          echo "---- release notes ----"; cat notes.md
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          body_path: notes.md
+          files: dist/*
+          fail_on_unmatched_files: true
+          generate_release_notes: false
