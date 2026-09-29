@@ -49,7 +49,7 @@ jobs:
           $exe = Get-Item artifacts/win-x64/SMARTProbe.exe
           "Native executable: {0:N1} MB" -f ($exe.Length / 1MB)
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: SMARTProbe-win-x64
           path: artifacts/win-x64/SMARTProbe.exe
