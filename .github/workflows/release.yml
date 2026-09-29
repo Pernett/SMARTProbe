@@ -86,7 +86,7 @@ jobs:
           if [ ! -s notes.md ]; then echo "No changelog entry found for $version." > notes.md; fi
           echo "---- release notes ----"; cat notes.md
 
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           body_path: notes.md
           files: dist/*
