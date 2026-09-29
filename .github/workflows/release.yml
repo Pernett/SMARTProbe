@@ -16,9 +16,9 @@ jobs:
         rid: [win-x64, win-arm64]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
@@ -46,14 +46,14 @@ jobs:
           Compress-Archive -Path artifacts/${{ matrix.rid }}/SMARTProbe.exe, artifacts/${{ matrix.rid }}/LICENSE, artifacts/${{ matrix.rid }}/README.md -DestinationPath "$name.zip"
           (Get-FileHash "$name.zip" -Algorithm SHA256).Hash.ToLower() + "  $name.zip" | Out-File "$name.zip.sha256" -Encoding ascii -NoNewline
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.rid }}
           path: |
             SMARTProbe-*.zip
             SMARTProbe-*.zip.sha256
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: symbols-${{ matrix.rid }}
           path: artifacts/${{ matrix.rid }}/SMARTProbe.pdb
@@ -65,9 +65,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v8
         with:
           path: dist
           merge-multiple: true
@@ -86,7 +86,7 @@ jobs:
           if [ ! -s notes.md ]; then echo "No changelog entry found for $version." > notes.md; fi
           echo "---- release notes ----"; cat notes.md
 
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           body_path: notes.md
           files: dist/*
