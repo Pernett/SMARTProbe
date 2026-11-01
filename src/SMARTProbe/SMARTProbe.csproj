@@ -23,7 +23,7 @@
   <ItemGroup>
     <!-- The one dependency: SCM integration and the Event Log logger. Everything else is the
          base class library plus P/Invoke. -->
-    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.14" />
   </ItemGroup>
 
   <ItemGroup>
